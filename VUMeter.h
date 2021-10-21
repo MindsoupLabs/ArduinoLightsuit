@@ -9,7 +9,7 @@ enum MeterType { REGLAR, REVERSE, CENTERED };
 
 class VUMeter {
 	public:
-		VUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip);
+		VUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs);
 		~VUMeter();
 		void loop(VolumeContext &context, unsigned int startPositionOffset) = 0;
 };
