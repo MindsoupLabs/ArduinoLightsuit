@@ -2,7 +2,21 @@
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
+#include <Adafruit_NeoPixel.h>
 
+#define SERIAL_SPEED 115200
+
+// microphone defines
+#define MIC_PIN A0
+#define SAMPLES_SIZE 128
+#define MAX_MIC_VALUE 4096
+#define SAMPLE_TIME_MS 50
+
+// LED defines
+#define NUM_LEDS 87
+#define LED_PIN 13
+
+// BLE defines
 #define SERVICE_UUID "23914549-10c1-490d-a01b-9a4bea11a878"
 #define MODE_CHARACTERISTIC_UUID "3cc3402b-c79c-4f9d-9369-2901a31a0692"
 #define PATTERN_CHARACTERISTIC_UUID "9dec7a9f-effe-407d-ac8e-227e2dc64982"
@@ -15,22 +29,15 @@
 #define MODE_CYCLE 1
 #define MODE_SELECT 2
 
-#define ONBOARD_LED_PIN 2
-
 const unsigned char MAX_PATTERNS = 4;
 const unsigned int CYCLE_RATE = 4000;
 
 unsigned char currentPattern = 0;
 unsigned char currentMode = MODE_OFF;
 unsigned long lastActivityTimestamp = millis();
-bool ledIsOn = false;
 
-BLECharacteristic* pPatternCharacteristic;
-
-void notifyPatternChanged() {
-    pPatternCharacteristic->setValue(&currentPattern, 1);
-    pPatternCharacteristic->notify();
-}
+unsigned int sample;
+Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 class CharacteristicChangeCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
@@ -55,7 +62,6 @@ class CharacteristicChangeCallbacks: public BLECharacteristicCallbacks {
                 // handle pattern changes
                 if((unsigned char)rxValue[0] < MAX_PATTERNS) {
                     currentPattern = (unsigned char)rxValue[0];
-                    notifyPatternChanged();
                 }
             }
             Serial.println();
@@ -69,12 +75,10 @@ void incrementCurrentPattern() {
     if(currentPattern >= MAX_PATTERNS) {
         currentPattern = 0;
     }
-
-    notifyPatternChanged();
 }
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(SERIAL_SPEED);
     while(!Serial) {
         // wait
     }
@@ -96,7 +100,7 @@ void setup() {
     pModeCharacteristic->setValue(MODE_OFF_STR);
     pModeCharacteristic->setCallbacks(callbacks);
 
-    pPatternCharacteristic = pService->createCharacteristic(
+    BLECharacteristic* pPatternCharacteristic = pService->createCharacteristic(
         PATTERN_CHARACTERISTIC_UUID,
         BLECharacteristic::PROPERTY_READ|BLECharacteristic::PROPERTY_WRITE|BLECharacteristic::PROPERTY_NOTIFY
     );
@@ -112,22 +116,48 @@ void setup() {
     pAdvertising->setMinPreferred(0x12);
     BLEDevice::startAdvertising();
 
-    pinMode(ONBOARD_LED_PIN, OUTPUT);
+    strip.begin();
+    strip.show();
+
+	// put your setup code here, to run once:
+	pinMode(MIC_PIN, INPUT);
 
     Serial.println(F("Lightsuit started"));
 }
 
 void loop() {
-    if(millis() - lastActivityTimestamp > CYCLE_RATE) {
-        lastActivityTimestamp = millis();
+	double currentSample = getVolumeSample();
+	unsigned int lightUpPixels = ceil(currentSample * NUM_LEDS);
+	Serial.print(currentSample);Serial.print(", ");Serial.println(lightUpPixels);
 
-        ledIsOn = !ledIsOn;
-        digitalWrite(ONBOARD_LED_PIN, ledIsOn ? HIGH : LOW);
+	for(unsigned int i = 0; i < NUM_LEDS; i++) {
+		strip.setPixelColor(i, 0, 0, i < lightUpPixels ? 128 : 0);
+	}
 
-        if(currentMode == MODE_CYCLE) {
-            incrementCurrentPattern();
-        }
+	strip.show();
+}
 
-        Serial.print(F("Mode: "));Serial.print(currentMode);Serial.print(F(", Pattern: "));Serial.println(currentPattern);
-    }
+double getVolumeSample() {
+	unsigned long startMillis = millis();  // Start of sample window
+	float peakToPeak = 0;   // peak-to-peak level
+
+	unsigned int signalMax = 0;
+	unsigned int signalMin = MAX_MIC_VALUE;
+
+	// collect data for 50 mS
+	while (millis() - startMillis < SAMPLE_TIME_MS) {
+		sample = analogRead(MIC_PIN);
+		if (sample < MAX_MIC_VALUE) {
+			if (sample > signalMax) {
+				signalMax = sample;  // save just the max levels
+			} else if (sample < signalMin) {
+				signalMin = sample;  // save just the min levels
+			}
+		}
+	}
+
+	peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
+	double normalized = peakToPeak / MAX_MIC_VALUE;
+
+	return normalized;
 }
