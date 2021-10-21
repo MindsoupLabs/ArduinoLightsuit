@@ -4,6 +4,8 @@
 #include <BLEServer.h>
 #include <Adafruit_NeoPixel.h>
 
+#include "SimpleVUEffect.h"
+
 #define SERIAL_SPEED 115200
 
 // microphone defines
@@ -38,6 +40,8 @@ unsigned long lastActivityTimestamp = millis();
 
 unsigned int sample;
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+LightEffect* currentEffect = 0;
 
 class CharacteristicChangeCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
@@ -122,19 +126,22 @@ void setup() {
 	// put your setup code here, to run once:
 	pinMode(MIC_PIN, INPUT);
 
+	currentEffect = new SimpleVUEffect();
+
     Serial.println(F("Lightsuit started"));
 }
 
 void loop() {
 	double currentSample = getVolumeSample();
-	unsigned int lightUpPixels = ceil(currentSample * NUM_LEDS);
-	Serial.print(currentSample);Serial.print(", ");Serial.println(lightUpPixels);
 
-	for(unsigned int i = 0; i < NUM_LEDS; i++) {
-		strip.setPixelColor(i, 0, 0, i < lightUpPixels ? 128 : 0);
-	}
+	Serial.println(currentSample);
 
-	strip.show();
+	VolumeContext context;
+	context.volume = currentSample;
+	context.strip = &strip;
+	context.numLeds = NUM_LEDS;
+
+	currentEffect->loop(context);
 }
 
 double getVolumeSample() {
