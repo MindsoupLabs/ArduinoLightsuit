@@ -6,15 +6,15 @@ SimpleVUEffect::SimpleVUEffect() {
 SimpleVUEffect::~SimpleVUEffect() {
 }
 
-void SimpleVUEffect::setup() {
+void SimpleVUEffect::setup(LedStripContext &context) {
 }
 
 void SimpleVUEffect::loop(VolumeContext &context) {
-	unsigned int lightUpPixels = ceil(context.volume * context.numLeds);
+	unsigned int lightUpPixels = ceil(context.volume * context.ledStrip.numLeds);
 
-	for(unsigned int i = 0; i < context.numLeds; i++) {
-		context.strip->setPixelColor(i, 0, 0, i < lightUpPixels ? 128 : 0);
+	for(unsigned int i = 0; i < context.ledStrip.numLeds; i++) {
+		context.ledStrip.strip->setPixelColor(i, 0, 0, i < lightUpPixels ? 128 : 0);
 	}
 
-	context.strip->show();
+	context.ledStrip.strip->show();
 }

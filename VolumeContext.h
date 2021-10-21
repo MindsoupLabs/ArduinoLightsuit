@@ -2,11 +2,11 @@
 #define VolumeContext_h
 
 #include <Adafruit_NeoPixel.h>
+#include "LedStripContext.h"
 
 struct VolumeContext {
 	double volume;
-	Adafruit_NeoPixel* strip;
-	unsigned int numLeds;
+	LedStripContext ledStrip;
 };
 
 #endif

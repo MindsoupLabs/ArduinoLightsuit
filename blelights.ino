@@ -5,6 +5,8 @@
 #include <Adafruit_NeoPixel.h>
 
 #include "SimpleVUEffect.h"
+#include "VolumeContext.h"
+#include "LedStripContext.h"
 
 #define SERIAL_SPEED 115200
 
@@ -126,7 +128,7 @@ void setup() {
 	// put your setup code here, to run once:
 	pinMode(MIC_PIN, INPUT);
 
-	currentEffect = new SimpleVUEffect();
+	switchEffect(new SimpleVUEffect());
 
     Serial.println(F("Lightsuit started"));
 }
@@ -136,12 +138,32 @@ void loop() {
 
 	Serial.println(currentSample);
 
+	currentSample = currentSample * 5; // TODO: replace 5 with multiplier value set via BLE
+
+	if(currentSample > 1) {
+		currentSample = 1.0;
+	}
+
 	VolumeContext context;
 	context.volume = currentSample;
+	context.ledStrip.strip = &strip;
+	context.ledStrip.numLeds = NUM_LEDS;
+
+	currentEffect->loop(context);
+}
+
+void switchEffect(LightEffect* effect) {
+	if(currentEffect != 0) {
+		delete currentEffect;
+	}
+
+	currentEffect = effect;
+
+	LedStripContext context;
 	context.strip = &strip;
 	context.numLeds = NUM_LEDS;
 
-	currentEffect->loop(context);
+	currentEffect->setup(context);
 }
 
 double getVolumeSample() {

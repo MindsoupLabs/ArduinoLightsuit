@@ -7,7 +7,7 @@ class SimpleVUEffect : public LightEffect {
 	public:
 		SimpleVUEffect();
 		~SimpleVUEffect();
-		void setup();
+		void setup(LedStripContext &context);
 		void loop(VolumeContext &context);
 
 };
