@@ -2,8 +2,8 @@
 #include "RegularVUMeter.h"
 
 CenteredVUMeter::CenteredVUMeter(LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs, ColorGenerator* colorGenerator) {
-	leftMeter = new RegularVUMeter(REGULAR, context, startPosition, sizeRelativeToStrip * 0.5, fallOffTimeMs, colorGenerator);
-	rightMeter = new RegularVUMeter(REVERSE, context, startPosition, sizeRelativeToStrip * 0.5, fallOffTimeMs, colorGenerator);
+	leftMeter = new RegularVUMeter(REGULAR, context, startPosition, sizeRelativeToStrip * 0.5, fallOffTimeMs, colorGenerator, false);
+	rightMeter = new RegularVUMeter(REVERSE, context, startPosition, sizeRelativeToStrip * 0.5, fallOffTimeMs, colorGenerator, true);
 }
 
 CenteredVUMeter::~CenteredVUMeter() {

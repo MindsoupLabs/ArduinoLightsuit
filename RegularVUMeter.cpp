@@ -1,15 +1,18 @@
 #include "RegularVUMeter.h"
 
-RegularVUMeter::RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs, ColorGenerator* colorGenerator) {
+RegularVUMeter::RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs, ColorGenerator* colorGenerator,  bool deleteColorGeneratorOnDestruct) {
 	this->type = type;
 	this->fallOffTimeMs = fallOffTimeMs;
 	this->startPosition = startPosition;
 	this->sizeInLeds = (unsigned int)ceil(sizeRelativeToStrip * context.numLeds);
 	this->colorGenerator = colorGenerator;
+	this->deleteColorGeneratorOnDestruct = deleteColorGeneratorOnDestruct;
 }
 
 RegularVUMeter::~RegularVUMeter() {
-	delete colorGenerator;
+	if(deleteColorGeneratorOnDestruct) {
+		delete colorGenerator;
+	}
 }
 
 void RegularVUMeter::loop(VolumeContext &context, unsigned int startPositionOffset) {

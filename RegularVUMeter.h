@@ -10,7 +10,7 @@ enum MeterType { REGULAR, REVERSE };
 
 class RegularVUMeter : public VUMeter {
 	public:
-		RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs, ColorGenerator* colorGenerator);
+		RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs, ColorGenerator* colorGenerator, bool deleteColorGeneratorOnDestruct);
 		~RegularVUMeter();
 		virtual void loop(VolumeContext &context, unsigned int startPositionOffset);
 
@@ -22,6 +22,7 @@ class RegularVUMeter : public VUMeter {
 		unsigned int fallOffTimeMs;
 		MeterType type;
 		ColorGenerator* colorGenerator;
+		bool deleteColorGeneratorOnDestruct = true;
 };
 
 #endif
