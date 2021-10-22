@@ -11,9 +11,6 @@ VUMeter::~VUMeter() {
 }
 
 void VUMeter::loop(VolumeContext &context, unsigned int startPositionOffset) {
-	// reset all LEDs
-	context.ledStrip.strip->fill(context.ledStrip.strip->Color(0, 0, 0), 0, context.ledStrip.numLeds);
-
 	// handle falloff
 	// first reduce the previousMax value according to the falloff speed, but never below 0
 	unsigned long timeElapsedSinceLast = millis() - this->previousMaxTime;
@@ -29,7 +26,7 @@ void VUMeter::loop(VolumeContext &context, unsigned int startPositionOffset) {
 	// set lit up pixels
 	unsigned int startPosition = this->startPosition + startPositionOffset;
 	int ledIndex = startPosition;
-	for(unsigned int i = 0; i < lightUpPixels; i++) {
+	for(unsigned int i = 0; i < this->sizeInLeds; i++) {
 		// regular or reverse order
 		ledIndex = this->type == REGULAR ? i + startPosition : startPosition - i;
 
@@ -37,7 +34,13 @@ void VUMeter::loop(VolumeContext &context, unsigned int startPositionOffset) {
 		ledIndex = ledIndex < 0 ? context.ledStrip.numLeds + ledIndex : ledIndex;
 		ledIndex = ledIndex < context.ledStrip.numLeds ? ledIndex : ledIndex - context.ledStrip.numLeds;
 
-		context.ledStrip.strip->setPixelColor(ledIndex, 0, 0, 128);
+		if(i < lightUpPixels) {
+			context.ledStrip.strip->setPixelColor(ledIndex, 0, 0, 128);
+		} else {
+			// turn unlit pixels off
+			context.ledStrip.strip->setPixelColor(ledIndex, 0, 0, 0);
+		}
+
 	}
 
 	context.ledStrip.strip->show();

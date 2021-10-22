@@ -1,4 +1,5 @@
 #include "SimpleVUEffect.h"
+#include "CenteredVUMeter.h"
 
 SimpleVUEffect::SimpleVUEffect() {
 }
@@ -10,7 +11,7 @@ SimpleVUEffect::~SimpleVUEffect() {
 }
 
 void SimpleVUEffect::setup(LedStripContext &context) {
-	vumeter = new VUMeter(REVERSE, context, 0, 1.0, 3000);
+	vumeter = new CenteredVUMeter(REVERSE, context, 40, 1.0, 5000);
 }
 
 void SimpleVUEffect::loop(VolumeContext &context) {
