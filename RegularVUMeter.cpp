@@ -43,6 +43,4 @@ void RegularVUMeter::loop(VolumeContext &context, unsigned int startPositionOffs
 			context.ledStrip.strip->setPixelColor(ledIndex, 0, 0, 0);
 		}
 	}
-
-	context.ledStrip.strip->show();
 }

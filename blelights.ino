@@ -151,6 +151,7 @@ void loop() {
 
 	if(currentEffect != 0) {
 		currentEffect->loop(context);
+		strip.show();
 	}
 }
 
