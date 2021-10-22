@@ -28,9 +28,16 @@ void VUMeter::loop(VolumeContext &context, unsigned int startPositionOffset) {
 
 	// set lit up pixels
 	unsigned int startPosition = this->startPosition + startPositionOffset;
-	for(unsigned int i = startPosition; i < startPosition + lightUpPixels; i++) {
+	int ledIndex = startPosition;
+	for(unsigned int i = 0; i < lightUpPixels; i++) {
+		// regular or reverse order
+		ledIndex = this->type == REGULAR ? i + startPosition : startPosition - i;
+
 		// wrap around
-		context.ledStrip.strip->setPixelColor(i < context.ledStrip.numLeds ? i : i - context.ledStrip.numLeds, 0, 0, 128);
+		ledIndex = ledIndex < 0 ? context.ledStrip.numLeds + ledIndex : ledIndex;
+		ledIndex = ledIndex < context.ledStrip.numLeds ? ledIndex : ledIndex - context.ledStrip.numLeds;
+
+		context.ledStrip.strip->setPixelColor(ledIndex, 0, 0, 128);
 	}
 
 	context.ledStrip.strip->show();
