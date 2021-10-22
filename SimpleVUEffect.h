@@ -2,6 +2,7 @@
 #define SimpleVUEffect_h
 
 #include "LightEffect.h"
+#include "VUMeter.h"
 
 class SimpleVUEffect : public LightEffect {
 	public:
@@ -10,6 +11,8 @@ class SimpleVUEffect : public LightEffect {
 		void setup(LedStripContext &context);
 		void loop(VolumeContext &context);
 
+	private:
+		VUMeter* vumeter = 0;
 };
 
 #endif

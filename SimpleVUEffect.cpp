@@ -4,17 +4,15 @@ SimpleVUEffect::SimpleVUEffect() {
 }
 
 SimpleVUEffect::~SimpleVUEffect() {
+	if(vumeter != 0) {
+		delete vumeter;
+	}
 }
 
 void SimpleVUEffect::setup(LedStripContext &context) {
+	vumeter = new VUMeter(REGULAR, context, 0, 1.0, 200);
 }
 
 void SimpleVUEffect::loop(VolumeContext &context) {
-	unsigned int lightUpPixels = ceil(context.volume * context.ledStrip.numLeds);
-
-	for(unsigned int i = 0; i < context.ledStrip.numLeds; i++) {
-		context.ledStrip.strip->setPixelColor(i, 0, 0, i < lightUpPixels ? 128 : 0);
-	}
-
-	context.ledStrip.strip->show();
+	vumeter->loop(context, 0);
 }
