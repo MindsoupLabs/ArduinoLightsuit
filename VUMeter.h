@@ -16,6 +16,10 @@ class VUMeter {
 	private:
 		unsigned int previousMax;
 		unsigned long previousMaxTime;
+		unsigned int sizeInLeds;
+		unsigned int startPosition;
+		unsigned int fallOffTimeMs;
+		MeterType type;
 };
 
 #endif
