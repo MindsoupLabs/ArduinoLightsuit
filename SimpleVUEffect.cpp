@@ -12,7 +12,7 @@ SimpleVUEffect::~SimpleVUEffect() {
 }
 
 void SimpleVUEffect::setup(LedStripContext &context) {
-	vumeter = new RegularVUMeter(REGULAR, context, 0, 1.0, 5000, new TimeColorGenerator(10000), true);
+	vumeter = new RegularVUMeter(REVERSE, context, context.numLeds - 1, 1.0, 5000, new TimeColorGenerator(10000), true);
 }
 
 void SimpleVUEffect::loop(VolumeContext &context) {
