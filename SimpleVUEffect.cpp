@@ -10,7 +10,7 @@ SimpleVUEffect::~SimpleVUEffect() {
 }
 
 void SimpleVUEffect::setup(LedStripContext &context) {
-	vumeter = new VUMeter(REGULAR, context, 10, 1.0, 200);
+	vumeter = new VUMeter(REGULAR, context, 0, 1.0, 3000);
 }
 
 void SimpleVUEffect::loop(VolumeContext &context) {

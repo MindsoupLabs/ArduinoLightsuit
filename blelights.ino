@@ -138,7 +138,7 @@ void loop() {
 
 	Serial.println(currentSample);
 
-	currentSample = currentSample * 5; // TODO: replace 5 with multiplier value set via BLE
+	currentSample = currentSample * 1; // TODO: replace 5 with multiplier value set via BLE
 
 	if(currentSample > 1) {
 		currentSample = 1.0;

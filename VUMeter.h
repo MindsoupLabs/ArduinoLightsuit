@@ -14,8 +14,8 @@ class VUMeter {
 		void loop(VolumeContext &context, unsigned int startPositionOffset);
 
 	private:
-		unsigned int previousMax;
-		unsigned long previousMaxTime;
+		unsigned int previousMax = 0;
+		unsigned long previousMaxTime = millis();
 		unsigned int sizeInLeds;
 		unsigned int startPosition;
 		unsigned int fallOffTimeMs;
