@@ -7,7 +7,7 @@
 
 class CenteredVUMeter : public VUMeter {
 	public:
-		CenteredVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs);
+		CenteredVUMeter(LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs);
 		~CenteredVUMeter();
 		void loop(VolumeContext &context, unsigned int startPositionOffset);
 

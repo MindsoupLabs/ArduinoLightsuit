@@ -1,16 +1,16 @@
-#include "VUMeter.h"
+#include "RegularVUMeter.h"
 
-VUMeter::VUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs) {
+RegularVUMeter::RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs) {
 	this->type = type;
 	this->fallOffTimeMs = fallOffTimeMs;
 	this->startPosition = startPosition;
 	this->sizeInLeds = (unsigned int)ceil(sizeRelativeToStrip * context.numLeds);
 }
 
-VUMeter::~VUMeter() {
+RegularVUMeter::~RegularVUMeter() {
 }
 
-void VUMeter::loop(VolumeContext &context, unsigned int startPositionOffset) {
+void RegularVUMeter::loop(VolumeContext &context, unsigned int startPositionOffset) {
 	// handle falloff
 	// first reduce the previousMax value according to the falloff speed, but never below 0
 	unsigned long timeElapsedSinceLast = millis() - this->previousMaxTime;
