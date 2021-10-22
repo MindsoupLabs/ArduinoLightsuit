@@ -1,5 +1,6 @@
 #include "SimpleVUEffect.h"
 #include "RegularVUMeter.h"
+#include "TimeColorGenerator.h"
 
 SimpleVUEffect::SimpleVUEffect() {
 }
@@ -11,7 +12,7 @@ SimpleVUEffect::~SimpleVUEffect() {
 }
 
 void SimpleVUEffect::setup(LedStripContext &context) {
-	vumeter = new RegularVUMeter(REGULAR, context, 0, 1.0, 5000);
+	vumeter = new RegularVUMeter(REGULAR, context, 0, 1.0, 5000, new TimeColorGenerator(10000));
 }
 
 void SimpleVUEffect::loop(VolumeContext &context) {

@@ -2,6 +2,7 @@
 #define RegularVUMeter_h
 
 #include "VUMeter.h"
+#include "ColorGenerator.h"
 #include "VolumeContext.h"
 #include "LedStripContext.h"
 
@@ -9,7 +10,7 @@ enum MeterType { REGULAR, REVERSE };
 
 class RegularVUMeter : public VUMeter {
 	public:
-		RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs);
+		RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs, ColorGenerator* colorGenerator);
 		~RegularVUMeter();
 		virtual void loop(VolumeContext &context, unsigned int startPositionOffset);
 
@@ -20,6 +21,7 @@ class RegularVUMeter : public VUMeter {
 		unsigned int startPosition;
 		unsigned int fallOffTimeMs;
 		MeterType type;
+		ColorGenerator* colorGenerator;
 };
 
 #endif

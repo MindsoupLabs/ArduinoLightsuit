@@ -149,7 +149,9 @@ void loop() {
 	context.ledStrip.strip = &strip;
 	context.ledStrip.numLeds = NUM_LEDS;
 
-	currentEffect->loop(context);
+	if(currentEffect != 0) {
+		currentEffect->loop(context);
+	}
 }
 
 void switchEffect(LightEffect* effect) {

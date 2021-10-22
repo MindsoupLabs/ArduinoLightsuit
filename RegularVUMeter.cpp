@@ -1,13 +1,15 @@
 #include "RegularVUMeter.h"
 
-RegularVUMeter::RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs) {
+RegularVUMeter::RegularVUMeter(MeterType type, LedStripContext &context, unsigned int startPosition, float sizeRelativeToStrip, unsigned int fallOffTimeMs, ColorGenerator* colorGenerator) {
 	this->type = type;
 	this->fallOffTimeMs = fallOffTimeMs;
 	this->startPosition = startPosition;
 	this->sizeInLeds = (unsigned int)ceil(sizeRelativeToStrip * context.numLeds);
+	this->colorGenerator = colorGenerator;
 }
 
 RegularVUMeter::~RegularVUMeter() {
+	delete colorGenerator;
 }
 
 void RegularVUMeter::loop(VolumeContext &context, unsigned int startPositionOffset) {
@@ -33,14 +35,13 @@ void RegularVUMeter::loop(VolumeContext &context, unsigned int startPositionOffs
 		// wrap around
 		ledIndex = ledIndex < 0 ? context.ledStrip.numLeds + ledIndex : ledIndex;
 		ledIndex = ledIndex < context.ledStrip.numLeds ? ledIndex : ledIndex - context.ledStrip.numLeds;
-
+		Color color = this->colorGenerator->getColor((float)i / this->sizeInLeds);
 		if(i < lightUpPixels) {
-			context.ledStrip.strip->setPixelColor(ledIndex, 0, 0, 128);
+			context.ledStrip.strip->setPixelColor(ledIndex, context.ledStrip.strip->Color(color.R, color.G, color.B));
 		} else {
 			// turn unlit pixels off
 			context.ledStrip.strip->setPixelColor(ledIndex, 0, 0, 0);
 		}
-
 	}
 
 	context.ledStrip.strip->show();
