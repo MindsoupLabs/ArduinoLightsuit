@@ -19,6 +19,10 @@ void JitteryMultiMiniVUEffect::setup(LedStripContext &context) {
 }
 
 void JitteryMultiMiniVUEffect::loop(VolumeContext &context) {
+	// ensure all leds are cleared
+	context.ledStrip.strip->fill(context.ledStrip.strip->Color(0,0,0), 0, context.ledStrip.numLeds);
+
+	// random jittery movement
 	if(context.volume > 0.3) {
 		positionOffset = positionOffset + ((esp_random() % 5) - 2);
 	}

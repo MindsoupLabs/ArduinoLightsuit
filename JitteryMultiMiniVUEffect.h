@@ -12,7 +12,7 @@ class JitteryMultiMiniVUEffect : public LightEffect {
 		void loop(VolumeContext &context);
 
 	private:
-		static const unsigned int NUM_VUMETERS = 4;
+		static const unsigned int NUM_VUMETERS = 5;
 		VUMeter* vumeters[NUM_VUMETERS];
 		unsigned int positionOffset = 0;
 };
