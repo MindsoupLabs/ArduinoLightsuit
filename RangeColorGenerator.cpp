@@ -1,7 +1,5 @@
 #include "RangeColorGenerator.h"
 
-#include <Arduino.h>
-
 RangeColorGenerator::RangeColorGenerator() {
 }
 

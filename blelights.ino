@@ -6,6 +6,7 @@
 
 #include "SimpleVUEffect.h"
 #include "CenteredVUEffect.h"
+#include "JitteryMultiMiniVUEffect.h"
 #include "VolumeContext.h"
 #include "LedStripContext.h"
 
@@ -39,11 +40,17 @@
 #define VOLUME_MODE_AUTO "auto"
 #define VOLUME_MODE_SELECT "select"
 
-const unsigned char MAX_PATTERNS = 2;
+const unsigned char MAX_PATTERNS = 3;
 const unsigned int CYCLE_RATE = 20000;
 
+// start values
 unsigned char currentPattern = 0;
 unsigned char currentMode = MODE_OFF;
+
+// test values
+//unsigned char currentPattern = 2;
+//unsigned char currentMode = MODE_SELECT;
+
 unsigned long lastActivityTimestamp = millis();
 bool adjustVolumeModifierAutomatically = false;
 unsigned char volumeModifierChar = 255;
@@ -77,6 +84,9 @@ void switchEffect(unsigned char effect) {
 		case 1:
 			switchEffect(new CenteredVUEffect());
 			break;
+		case 2:
+			switchEffect(new JitteryMultiMiniVUEffect());
+			break;
 		default:
 			switchEffect(new SimpleVUEffect());
 			break;
@@ -104,10 +114,11 @@ class CharacteristicChangeCallbacks: public BLECharacteristicCallbacks {
                 Serial.print(F("Mode changed to: "));Serial.print(currentMode);
             } else if (pCharacteristic->getUUID().toString().compare(PATTERN_CHARACTERISTIC_UUID) == 0) {
                 Serial.print(F("(Pattern change) "));Serial.println((unsigned char)rxValue[0]);
-
+				Serial.println((unsigned char)rxValue[0] < MAX_PATTERNS);
                 // handle pattern changes
                 if((unsigned char)rxValue[0] < MAX_PATTERNS) {
                     currentPattern = (unsigned char)rxValue[0];
+                    Serial.println(currentPattern);
                     switchEffect(currentPattern);
                 }
             } else if (pCharacteristic->getUUID().toString().compare(VOLUME_ADJUST_CHARACTERISTIC_UUID) == 0) {
@@ -188,7 +199,7 @@ void setup() {
 
 	pinMode(MIC_PIN, INPUT);
 
-	switchEffect(new SimpleVUEffect());
+	switchEffect(currentPattern);
 
     Serial.println(F("Lightsuit started"));
 }

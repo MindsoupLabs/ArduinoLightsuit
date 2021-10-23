@@ -2,8 +2,6 @@
 #include "CenteredVUMeter.h"
 #include "RangeColorGenerator.h"
 
-#include <Arduino.h>
-
 CenteredVUEffect::CenteredVUEffect() {
 }
 
