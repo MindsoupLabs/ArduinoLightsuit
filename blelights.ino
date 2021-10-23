@@ -57,6 +57,13 @@ unsigned char volumeModifierChar = 255;
 float volumeModifier = 1.0f;
 
 unsigned int sample;
+const unsigned int shortSamplesAmount = ceil(1000 / SAMPLE_TIME_MS);
+double shortSamplesBuffer[shortSamplesAmount];
+unsigned char shortSamplesIndex = 0;
+const unsigned char longSamplesAmount = 10;
+double longSamplesBuffer[longSamplesAmount];
+unsigned char longSamplesIndex = 0;
+
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 LightEffect* currentEffect = 0;
@@ -222,7 +229,41 @@ void loop() {
 
 	double currentSample = getVolumeSample();
 
-	currentSample = currentSample * 1; // TODO: replace 5 with multiplier value set via BLE
+	// handle automatic volume adjustments
+	shortSamplesBuffer[shortSamplesIndex] = currentSample;
+	shortSamplesIndex++;
+
+	// we have a second worth of samples, find the greatest value and reset the buffer index
+	if(shortSamplesIndex >= shortSamplesAmount) {
+		shortSamplesIndex = 0;
+
+		double loudestVolume = 0.0;
+		for(unsigned char i = 0; i < shortSamplesAmount; i++) {
+			if(shortSamplesBuffer[i] > loudestVolume) {
+				loudestVolume = shortSamplesBuffer[i];
+			}
+		}
+
+		longSamplesBuffer[longSamplesIndex] = loudestVolume;
+
+		// reset back to 0 after reaching longSamplesAmount - 1
+		longSamplesIndex = longSamplesIndex >= longSamplesAmount - 1 ? 0 : longSamplesIndex + 1;
+	}
+
+	float multiplier = 1.0;
+	if(adjustVolumeModifierAutomatically) {
+		// find loudest sample of the last X seconds
+		double loudestVolume = 0.0;
+		for(unsigned char i = 0; i < longSamplesAmount; i++) {
+			if(longSamplesBuffer[i] > loudestVolume) {
+				loudestVolume = longSamplesBuffer[i];
+			}
+		}
+
+		multiplier = 1.0 / loudestVolume * 0.7; // 0.7 is a reduction factor
+	}
+
+	currentSample = currentSample * multiplier;
 
 	if(currentSample > 1) {
 		currentSample = 1.0;
