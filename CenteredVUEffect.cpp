@@ -1,6 +1,6 @@
 #include "CenteredVUEffect.h"
 #include "CenteredVUMeter.h"
-#include "RangeColorGenerator.h"
+#include "TimeColorGenerator.h"
 
 CenteredVUEffect::CenteredVUEffect() {
 }
@@ -12,7 +12,7 @@ CenteredVUEffect::~CenteredVUEffect() {
 }
 
 void CenteredVUEffect::setup(LedStripContext &context) {
-	vumeter = new CenteredVUMeter(context, 43, 1.0, 5000, new RangeColorGenerator());
+	vumeter = new CenteredVUMeter(context, 43, 1.0, 5000, new TimeColorGenerator(10000));
 }
 
 void CenteredVUEffect::loop(VolumeContext &context) {

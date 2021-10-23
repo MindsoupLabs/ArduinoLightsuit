@@ -41,7 +41,7 @@
 #define VOLUME_MODE_SELECT "select"
 
 const unsigned char MAX_PATTERNS = 3;
-const unsigned int CYCLE_RATE = 20000;
+const unsigned int CYCLE_RATE = 15000;
 
 // start values
 unsigned char currentPattern = 0;
@@ -302,5 +302,7 @@ double getVolumeSample() {
 	peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
 	double normalized = peakToPeak / MAX_MIC_VALUE;
 
-	return normalized;
+	// provide the square root to emphasise lower volumes and deemphasise higher volumes
+	// this turns the linear 0.0 to 1.0 range into a curved 0.0 to 1.0 range
+	return sqrt(normalized);
 }
