@@ -32,7 +32,6 @@ void RunningLight::loop(VolumeContext &context) {
 	float tailColorFactor;
 	for(unsigned int i = 0; i < size; i++) {
 		tailColorFactor = (float)(size - i) / size;
-		Serial.println(pixelPosition);
 		if(pixelPosition < context.ledStrip.numLeds && pixelPosition >= 0) {
 			context.ledStrip.strip->setPixelColor(pixelPosition, context.ledStrip.strip->Color(floor(color.R * tailColorFactor), floor(color.G * tailColorFactor), floor(color.B * tailColorFactor)));
 		}
