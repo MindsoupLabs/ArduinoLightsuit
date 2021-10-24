@@ -5,6 +5,12 @@ ChainableLight::ChainableLight(ChainableLightListener* listener) {
 }
 
 ChainableLight::~ChainableLight() {
+	if(this->getNext() != 0) {
+		delete this->getNext();
+	}
+}
+
+void ChainableLight::remove() {
 	// this effect is being deleted, so reconnect the chain
 	if(this->getPrevious() != 0) {
 		this->getPrevious()->setNext(this->getNext());
@@ -18,6 +24,9 @@ ChainableLight::~ChainableLight() {
 		}
 		this->getListener()->onFirstElementChanged(this->getNext());
 	}
+
+	this->setPrevious(0);
+	this->setNext(0);
 }
 
 void ChainableLight::setNext(ChainableLight* effect) {
@@ -48,7 +57,9 @@ void ChainableLight::add(ChainableLight* effect) {
 void ChainableLight::runLoop(VolumeContext &context) {
 	this->loop(context);
 
-	this->getNext()->runLoop(context);
+	if(this->getNext() != 0) {
+		this->getNext()->runLoop(context);
+	}
 }
 
 ChainableLightListener* ChainableLight::getListener() {
