@@ -1,10 +1,10 @@
-#include "ChainableLightEffect.h"
+#include "ChainableLight.h"
 
-ChainableLightEffect::ChainableLightEffect(ChainableLightEffectListener* listener) {
+ChainableLight::ChainableLight(ChainableLightListener* listener) {
 	this->listener = listener;
 }
 
-ChainableLightEffect::~ChainableLightEffect() {
+ChainableLight::~ChainableLight() {
 	// this effect is being deleted, so reconnect the chain
 	if(this->getPrevious() != 0) {
 		this->getPrevious()->setNext(this->getNext());
@@ -20,23 +20,23 @@ ChainableLightEffect::~ChainableLightEffect() {
 	}
 }
 
-void ChainableLightEffect::setNext(ChainableLightEffect* effect) {
+void ChainableLight::setNext(ChainableLight* effect) {
 	this->next = effect;
 }
 
-void ChainableLightEffect::setPrevious(ChainableLightEffect* effect) {
+void ChainableLight::setPrevious(ChainableLight* effect) {
 	this->previous = effect;
 }
 
-ChainableLightEffect* ChainableLightEffect::getNext() {
+ChainableLight* ChainableLight::getNext() {
 	return this->next;
 }
 
-ChainableLightEffect* ChainableLightEffect::getPrevious() {
+ChainableLight* ChainableLight::getPrevious() {
 	return this->previous;
 }
 
-void ChainableLightEffect::add(ChainableLightEffect* effect) {
+void ChainableLight::add(ChainableLight* effect) {
 	if(this->getNext() == 0) {
 		this->setNext(effect);
 		effect->setPrevious(this);
@@ -45,12 +45,12 @@ void ChainableLightEffect::add(ChainableLightEffect* effect) {
 	}
 }
 
-void ChainableLightEffect::runLoop(VolumeContext &context) {
+void ChainableLight::runLoop(VolumeContext &context) {
 	this->loop(context);
 
 	this->getNext()->runLoop(context);
 }
 
-ChainableLightEffectListener* ChainableLightEffect::getListener() {
+ChainableLightListener* ChainableLight::getListener() {
 	return this->listener;
 }
