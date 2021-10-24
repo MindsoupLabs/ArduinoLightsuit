@@ -2,8 +2,6 @@
 #include "RunningLight.h"
 #include "RangeColorGenerator.h"
 
-#include <Arduino.h>
-
 RunningLightEffect::RunningLightEffect() {
 }
 
@@ -19,7 +17,7 @@ void RunningLightEffect::setup(LedStripContext &context) {
 void RunningLightEffect::loop(VolumeContext &context) {
 	context.ledStrip.strip->fill(context.ledStrip.strip->Color(0,0,0), 0, context.ledStrip.numLeds);
 
-	if(context.volume > 0.65) {
+	if(context.volume > 0.35) {
 		RunningLight* light = new RunningLight(0, 120, 5, 1000, new RangeColorGenerator(), this);
 		if(this->root == 0) {
 			this->root = light;

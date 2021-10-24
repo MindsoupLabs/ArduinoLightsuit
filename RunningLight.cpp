@@ -1,7 +1,7 @@
 #include "RunningLight.h"
 #include <Arduino.h>
 
-RunningLight::RunningLight(unsigned int startPosition, unsigned int ledsPerSecondSpeed, unsigned int size, unsigned int lifetime, ColorGenerator* colorGenerator, ChainableLightListener* listener) : ChainableLight(listener) {
+RunningLight::RunningLight(unsigned int startPosition, int ledsPerSecondSpeed, unsigned int size, unsigned int lifetime, ColorGenerator* colorGenerator, ChainableLightListener* listener) : ChainableLight(listener) {
 	this->startPosition = startPosition;
 	this->ledsPerSecondSpeed = ledsPerSecondSpeed;
 	this->size = size;
@@ -32,7 +32,7 @@ void RunningLight::loop(VolumeContext &context) {
 	float tailColorFactor;
 	for(unsigned int i = 0; i < size; i++) {
 		tailColorFactor = (float)(size - i) / size;
-
+		Serial.println(pixelPosition);
 		if(pixelPosition < context.ledStrip.numLeds && pixelPosition >= 0) {
 			context.ledStrip.strip->setPixelColor(pixelPosition, context.ledStrip.strip->Color(floor(color.R * tailColorFactor), floor(color.G * tailColorFactor), floor(color.B * tailColorFactor)));
 		}

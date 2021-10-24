@@ -8,6 +8,7 @@
 #include "CenteredVUEffect.h"
 #include "JitteryMultiMiniVUEffect.h"
 #include "RunningLightEffect.h"
+#include "ShootingLightEffect.h"
 #include "VolumeContext.h"
 #include "LedStripContext.h"
 
@@ -41,16 +42,16 @@
 #define VOLUME_MODE_AUTO "auto"
 #define VOLUME_MODE_SELECT "select"
 
-const unsigned char MAX_PATTERNS = 4;
+const unsigned char MAX_PATTERNS = 5;
 const unsigned int CYCLE_RATE = 15000;
 
 // start values
-//unsigned char currentPattern = 0;
-//unsigned char currentMode = MODE_OFF;
+unsigned char currentPattern = 0;
+unsigned char currentMode = MODE_OFF;
 
 // test values
-unsigned char currentPattern = 3;
-unsigned char currentMode = MODE_SELECT;
+//unsigned char currentPattern = 4;
+//unsigned char currentMode = MODE_SELECT;
 
 unsigned long lastActivityTimestamp = millis();
 bool adjustVolumeModifierAutomatically = false;
@@ -90,13 +91,16 @@ void switchEffect(unsigned char effect) {
 			switchEffect(new SimpleVUEffect());
 			break;
 		case 1:
-			switchEffect(new CenteredVUEffect());
+			switchEffect(new RunningLightEffect());
 			break;
 		case 2:
-			switchEffect(new JitteryMultiMiniVUEffect());
+			switchEffect(new CenteredVUEffect());
 			break;
 		case 3:
-			switchEffect(new RunningLightEffect());
+			switchEffect(new ShootingLightEffect());
+			break;
+		case 4:
+			switchEffect(new JitteryMultiMiniVUEffect());
 			break;
 		default:
 			switchEffect(new SimpleVUEffect());
