@@ -62,6 +62,14 @@ void ChainableLight::runLoop(VolumeContext &context) {
 	}
 }
 
+int ChainableLight::getChainLength() {
+	if(this->getNext() != 0) {
+		return this->getNext()->getChainLength() + 1;
+	}
+
+	return 1;
+}
+
 ChainableLightListener* ChainableLight::getListener() {
 	return this->listener;
 }

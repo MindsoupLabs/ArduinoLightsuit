@@ -22,6 +22,7 @@ class ChainableLight {
 		ChainableLight* getPrevious();
 		void add(ChainableLight* effect);
 		void runLoop(VolumeContext &context);
+		int getChainLength();
 
 		virtual void loop(VolumeContext &context) = 0;
 

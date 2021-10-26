@@ -5,7 +5,7 @@
 
 struct LedStripContext {
 	Adafruit_NeoPixel* strip;
-	unsigned int numLeds;
+	int numLeds;
 };
 
 #endif
