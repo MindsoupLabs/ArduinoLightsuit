@@ -35,10 +35,12 @@
 #define MODE_OFF_STR "off"
 #define MODE_CYCLE_STR "cycle"
 #define MODE_SELECT_STR "select"
+#define MODE_RANDOM_STR "random"
 
 #define MODE_OFF 0
 #define MODE_CYCLE 1
 #define MODE_SELECT 2
+#define MODE_RANDOM 3
 
 #define VOLUME_MODE_AUTO "auto"
 #define VOLUME_MODE_SELECT "select"
@@ -129,7 +131,9 @@ class CharacteristicChangeCallbacks: public BLECharacteristicCallbacks {
                     lastActivityTimestamp = millis();
                 } else if(rxValue.compare(MODE_SELECT_STR) == 0) {
                     currentMode = MODE_SELECT;
-                }
+                } else if(rxValue.compare(MODE_RANDOM_STR) == 0) {
+					currentMode = MODE_RANDOM;
+				}
                 Serial.print(F("Mode changed to: "));Serial.print(currentMode);
             } else if (pCharacteristic->getUUID().toString().compare(PATTERN_CHARACTERISTIC_UUID) == 0) {
                 Serial.print(F("(Pattern change) "));Serial.println((unsigned char)rxValue[0]);
@@ -229,9 +233,14 @@ void loop() {
 	}
 
 	// cycle patterns if needed
-	if(currentMode == MODE_CYCLE && lastActivityTimestamp + CYCLE_RATE < millis()) {
+	if( (currentMode == MODE_CYCLE || currentMode == MODE_RANDOM) && lastActivityTimestamp + CYCLE_RATE < millis()) {
 		lastActivityTimestamp = millis();
-		currentPattern++;
+
+		if(currentMode == MODE_CYCLE) {
+			currentPattern++;
+		} else {
+			currentPattern = floor((1.0 * esp_random() / UINT32_MAX) * MAX_PATTERNS);
+		}
 
 		if(currentPattern >= MAX_PATTERNS) {
 			currentPattern = 0;
