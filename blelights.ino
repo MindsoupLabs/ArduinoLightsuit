@@ -55,7 +55,7 @@ unsigned char currentMode = MODE_OFF;
 //unsigned char currentMode = MODE_SELECT;
 
 unsigned long lastActivityTimestamp = millis();
-bool adjustVolumeModifierAutomatically = false;
+bool adjustVolumeModifierAutomatically = true;
 unsigned char volumeModifierChar = 255;
 float volumeModifier = 1.0f;
 
@@ -95,10 +95,10 @@ void switchEffect(unsigned char effect) {
 			switchEffect(new RunningLightEffect());
 			break;
 		case 2:
-			switchEffect(new CenteredVUEffect());
+			switchEffect(new ShootingLightEffect());
 			break;
 		case 3:
-			switchEffect(new ShootingLightEffect());
+			switchEffect(new CenteredVUEffect());
 			break;
 		case 4:
 			switchEffect(new JitteryMultiMiniVUEffect());
@@ -318,5 +318,5 @@ double getVolumeSample() {
 
 	// provide the square root to emphasise lower volumes and deemphasise higher volumes
 	// this turns the linear 0.0 to 1.0 range into a curved 0.0 to 1.0 range
-	return sqrt(normalized);
+	return max(0.0, sqrt(normalized) - 0.2) / 0.8;
 }

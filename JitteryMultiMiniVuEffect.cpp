@@ -23,7 +23,7 @@ void JitteryMultiMiniVUEffect::loop(VolumeContext &context) {
 	context.ledStrip.strip->fill(context.ledStrip.strip->Color(0,0,0), 0, context.ledStrip.numLeds);
 
 	// random jittery movement
-	if(context.volume > 0.3) {
+	if(context.volume > 0.2) {
 		positionOffset = positionOffset + ((esp_random() % 5) - 2);
 	}
 	for(int i = 0; i < NUM_VUMETERS; i++) {
