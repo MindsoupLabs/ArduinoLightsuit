@@ -266,13 +266,15 @@ void loop() {
 	if(adjustVolumeModifierAutomatically) {
 		// find loudest sample of the last X seconds
 		double loudestVolume = 0.0;
+		float historicScaleFactor = 1.0; // older samples are weighed less
 		for(unsigned char i = 0; i < longSamplesAmount; i++) {
-			if(longSamplesBuffer[i] > loudestVolume) {
+			historicScaleFactor = (1.0 + i) / longSamplesAmount;
+			if(longSamplesBuffer[(i + longSamplesIndex) % longSamplesAmount] * historicScaleFactor > loudestVolume) {
 				loudestVolume = longSamplesBuffer[i];
 			}
 		}
 
-		multiplier = 1.0 / loudestVolume; // 0.7 is a reduction factor
+		multiplier = 1.0 / loudestVolume * 0.9;
 	}
 
 	currentSample = currentSample * multiplier;
@@ -314,9 +316,9 @@ double getVolumeSample() {
 	peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
 	double normalized = peakToPeak / MAX_MIC_VALUE;
 
-	Serial.print(signalMax);Serial.print(" ");Serial.print(signalMin);Serial.print(" v: ");Serial.println(sqrt(normalized));
-
 	// provide the square root to emphasise lower volumes and deemphasise higher volumes
 	// this turns the linear 0.0 to 1.0 range into a curved 0.0 to 1.0 range
 	return max(0.0, sqrt(normalized) - 0.2) / 0.8;
+
+	//alternate option: sqrt(max(0.0, normalized - 0.04) / 0.96);
 }
