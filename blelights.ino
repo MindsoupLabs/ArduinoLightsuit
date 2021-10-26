@@ -126,6 +126,8 @@ class CharacteristicChangeCallbacks: public BLECharacteristicCallbacks {
                 // handle mode changes
                 if(rxValue.compare(MODE_OFF_STR) == 0) {
                     currentMode = MODE_OFF;
+                    strip.fill(strip.Color(0,0,0), 0, NUM_LEDS);
+                    strip.show();
                 } else if(rxValue.compare(MODE_CYCLE_STR) == 0) {
                     currentMode = MODE_CYCLE;
                     lastActivityTimestamp = millis();
