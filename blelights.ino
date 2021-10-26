@@ -47,11 +47,11 @@ const unsigned int CYCLE_RATE = 15000;
 
 // start values
 unsigned char currentPattern = 0;
-unsigned char currentMode = MODE_OFF;
+//unsigned char currentMode = MODE_OFF;
 
 // test values
 //unsigned char currentPattern = 4;
-//unsigned char currentMode = MODE_SELECT;
+unsigned char currentMode = MODE_SELECT;
 
 unsigned long lastActivityTimestamp = millis();
 bool adjustVolumeModifierAutomatically = false;
