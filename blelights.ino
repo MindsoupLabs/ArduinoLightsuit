@@ -51,7 +51,7 @@ unsigned char currentPattern = 0;
 unsigned char currentMode = MODE_OFF;
 
 // test values
-//unsigned char currentPattern = 5;
+//unsigned char currentPattern = 1;
 //unsigned char currentMode = MODE_SELECT;
 
 unsigned long lastActivityTimestamp = millis();
@@ -272,7 +272,7 @@ void loop() {
 			}
 		}
 
-		multiplier = 1.0 / loudestVolume * 0.7; // 0.7 is a reduction factor
+		multiplier = 1.0 / loudestVolume; // 0.7 is a reduction factor
 	}
 
 	currentSample = currentSample * multiplier;
@@ -313,6 +313,8 @@ double getVolumeSample() {
 
 	peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
 	double normalized = peakToPeak / MAX_MIC_VALUE;
+
+	Serial.print(signalMax);Serial.print(" ");Serial.print(signalMin);Serial.print(" v: ");Serial.println(sqrt(normalized));
 
 	// provide the square root to emphasise lower volumes and deemphasise higher volumes
 	// this turns the linear 0.0 to 1.0 range into a curved 0.0 to 1.0 range

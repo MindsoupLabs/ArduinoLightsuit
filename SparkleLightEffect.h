@@ -17,6 +17,7 @@ class SparkleLightEffect : public LightEffect, public ChainableLightListener {
 	private:
 		ChainableLight* root = 0;
 		ColorGenerator* colorGenerator = new TimeColorGenerator(7000);
+		unsigned long timestampOfLastEffect = 0;
 };
 
 #endif

@@ -15,6 +15,7 @@ class ShootingLightEffect : public LightEffect, public ChainableLightListener {
 
 	private:
 		ChainableLight* root = 0;
+		unsigned long timestampOfLastEffect = 0;
 };
 
 #endif
