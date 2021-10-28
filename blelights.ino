@@ -30,7 +30,7 @@
 #define MODE_CHARACTERISTIC_UUID "3cc3402b-c79c-4f9d-9369-2901a31a0692"
 #define PATTERN_CHARACTERISTIC_UUID "9dec7a9f-effe-407d-ac8e-227e2dc64982"
 #define VOLUME_ADJUST_CHARACTERISTIC_UUID "da5d9c27-d269-4ff9-82b6-f2931c92f73d"
-#define VOLUME_MODIFIER_CHARACTERISTIC_UUID "cc67937a-1d5d-48ce-8efd-409bb64a6d8a"
+#define DEMO_CHARACTERISTIC_UUID "cc67937a-1d5d-48ce-8efd-409bb64a6d8a"
 
 #define MODE_OFF_STR "off"
 #define MODE_CYCLE_STR "cycle"
@@ -50,16 +50,16 @@ const unsigned int CYCLE_RATE = 15000;
 
 // start values
 unsigned char currentPattern = 0;
-unsigned char currentMode = MODE_OFF;
+//unsigned char currentMode = MODE_OFF;
 
 // test values
 //unsigned char currentPattern = 1;
-//unsigned char currentMode = MODE_SELECT;
+unsigned char currentMode = MODE_SELECT;
 
 unsigned long lastActivityTimestamp = millis();
 bool adjustVolumeModifierAutomatically = true;
-unsigned char volumeModifierChar = 255;
-float volumeModifier = 1.0f;
+
+bool isInDemoMode = false;
 
 unsigned int sample;
 const unsigned int shortSamplesAmount = ceil(1000 / SAMPLE_TIME_MS);
@@ -155,11 +155,15 @@ class CharacteristicChangeCallbacks: public BLECharacteristicCallbacks {
 				} else if(rxValue.compare(VOLUME_MODE_SELECT) == 0) {
 					adjustVolumeModifierAutomatically = false;
 				}
-            } else if (pCharacteristic->getUUID().toString().compare(VOLUME_MODIFIER_CHARACTERISTIC_UUID) == 0) {
-            	Serial.print(F("(Volume modifier) "));Serial.print((unsigned char)rxValue[0]);
+            } else if (pCharacteristic->getUUID().toString().compare(DEMO_CHARACTERISTIC_UUID) == 0) {
+            	Serial.print(F("(Demo setting) "));Serial.print(rxValue.c_str());
 
-            	volumeModifierChar = rxValue[0];
-            	volumeModifier = (float)volumeModifierChar / 255;
+            	if(rxValue.compare(MODE_OFF_STR) == 0) {
+					isInDemoMode = false;
+            	} else {
+            		isInDemoMode = true;
+            	}
+            	Serial.print(", demo is active: ");Serial.print(isInDemoMode);
             }
             Serial.println();
         }
@@ -203,12 +207,12 @@ void setup() {
 	pVolumeModeCharacteristic->setValue(VOLUME_MODE_SELECT);
 	pVolumeModeCharacteristic->setCallbacks(callbacks);
 
-	BLECharacteristic* pVolumeModifierCharacteristic = pService->createCharacteristic(
-            VOLUME_MODIFIER_CHARACTERISTIC_UUID,
+	BLECharacteristic* pDemoCharacteristic = pService->createCharacteristic(
+            DEMO_CHARACTERISTIC_UUID,
             BLECharacteristic::PROPERTY_READ|BLECharacteristic::PROPERTY_WRITE|BLECharacteristic::PROPERTY_NOTIFY
         );
-	pVolumeModifierCharacteristic->setValue(&volumeModifierChar, 1);
-	pVolumeModifierCharacteristic->setCallbacks(callbacks);
+	pDemoCharacteristic->setValue(MODE_OFF_STR);
+	pDemoCharacteristic->setCallbacks(callbacks);
 
     pService->start();
 
@@ -250,7 +254,8 @@ void loop() {
 		switchEffect(currentPattern);
 	}
 
-	double currentSample = getVolumeSample();
+	double currentSample = isInDemoMode ? getDemoVolumeSample() : getVolumeSample();
+	Serial.println(currentSample);
 
 	// handle automatic volume adjustments
 	shortSamplesBuffer[shortSamplesIndex] = currentSample;
@@ -332,4 +337,16 @@ double getVolumeSample() {
 	return max(0.0, sqrt(normalized) - 0.2) / 0.8;
 
 	//alternate option: sqrt(max(0.0, normalized - 0.04) / 0.96);
+}
+
+double getDemoVolumeSample() {
+	delay(SAMPLE_TIME_MS);
+
+	double randomValue = (1.0 * esp_random()) / UINT32_MAX;
+
+	if(millis() % 500 > 440) {
+		return 0.75 + (0.25 * randomValue);
+	}
+
+	return max(0.0, (randomValue * randomValue) - 0.2);
 }
