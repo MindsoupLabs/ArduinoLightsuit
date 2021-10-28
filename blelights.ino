@@ -348,5 +348,5 @@ double getDemoVolumeSample() {
 		return 0.75 + (0.25 * randomValue);
 	}
 
-	return max(0.0, (randomValue * randomValue) - 0.2);
+	return max(0.3 * randomValue, (randomValue * randomValue) - 0.2);
 }
