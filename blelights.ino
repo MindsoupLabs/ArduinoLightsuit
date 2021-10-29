@@ -255,7 +255,6 @@ void loop() {
 	}
 
 	double currentSample = isInDemoMode ? getDemoVolumeSample() : getVolumeSample();
-	Serial.println(currentSample);
 
 	// handle automatic volume adjustments
 	shortSamplesBuffer[shortSamplesIndex] = currentSample;
@@ -293,11 +292,13 @@ void loop() {
 		multiplier = 1.0 / loudestVolume * 0.9;
 	}
 
-	currentSample = currentSample * multiplier;
+	if(currentSample * multiplier < 1.0) {
+        currentSample = currentSample * multiplier;
+    }
 
-	if(currentSample > 1) {
-		currentSample = 1.0;
-	}
+    if(currentSample > 1.0) {
+        currentSample = 1.0;
+    }
 
 	VolumeContext context;
 	context.volume = currentSample;
