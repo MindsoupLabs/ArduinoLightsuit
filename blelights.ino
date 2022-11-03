@@ -27,15 +27,20 @@
 
 // BLE defines
 #define SERVICE_UUID "23914549-10c1-490d-a01b-9a4bea11a878"
+
+// off, cycle, select, random
 #define MODE_CHARACTERISTIC_UUID "3cc3402b-c79c-4f9d-9369-2901a31a0692"
-#define PATTERN_CHARACTERISTIC_UUID "9dec7a9f-effe-407d-ac8e-227e2dc64982"
+// 0...6
 #define VOLUME_ADJUST_CHARACTERISTIC_UUID "da5d9c27-d269-4ff9-82b6-f2931c92f73d"
+// off, demo, heart
 #define DEMO_CHARACTERISTIC_UUID "cc67937a-1d5d-48ce-8efd-409bb64a6d8a"
+#define PATTERN_CHARACTERISTIC_UUID "9dec7a9f-effe-407d-ac8e-227e2dc64982"
 
 #define MODE_OFF_STR "off"
 #define MODE_CYCLE_STR "cycle"
 #define MODE_SELECT_STR "select"
 #define MODE_RANDOM_STR "random"
+#define MODE_HEARTBEAT_STR "heart"
 
 #define MODE_OFF 0
 #define MODE_CYCLE 1
@@ -49,17 +54,22 @@ const unsigned char MAX_PATTERNS = 6;
 const unsigned int CYCLE_RATE = 15000;
 
 // start values
-unsigned char currentPattern = 0;
-unsigned char currentMode = MODE_OFF;
+unsigned char currentPattern = 4;
+//unsigned char currentMode = MODE_OFF;
 
 // test values
 //unsigned char currentPattern = 1;
-//unsigned char currentMode = MODE_SELECT;
+unsigned char currentMode = MODE_CYCLE;
 
 unsigned long lastActivityTimestamp = millis();
-bool adjustVolumeModifierAutomatically = true;
+unsigned long lastHeartbeatTimestamp = millis();
+bool adjustVolumeModifierAutomatically = false;
 
-bool isInDemoMode = false;
+bool isInDemoMode = true;
+bool isInHeartbeatMode = true;
+
+bool bigBeatSent = false;
+bool smallBeatSent = false;
 
 unsigned int sample;
 const unsigned int shortSamplesAmount = ceil(1000 / SAMPLE_TIME_MS);
@@ -162,6 +172,10 @@ class CharacteristicChangeCallbacks: public BLECharacteristicCallbacks {
 					isInDemoMode = false;
             	} else {
             		isInDemoMode = true;
+            		isInHeartbeatMode = false;
+            		if(rxValue.compare(MODE_HEARTBEAT_STR) == 0) {
+            			isInHeartbeatMode = true;
+            		}
             	}
             	Serial.print(", demo is active: ");Serial.print(isInDemoMode);
             }
@@ -254,7 +268,7 @@ void loop() {
 		switchEffect(currentPattern);
 	}
 
-	double currentSample = isInDemoMode ? getDemoVolumeSample() : getVolumeSample();
+	double currentSample = isInDemoMode ? (isInHeartbeatMode ? getHeartbeatVolumeSample() : getDemoVolumeSample()) : getVolumeSample();
 
 	// handle automatic volume adjustments
 	shortSamplesBuffer[shortSamplesIndex] = currentSample;
@@ -350,4 +364,24 @@ double getDemoVolumeSample() {
 	}
 
 	return max(0.3 * randomValue, (randomValue * randomValue) - 0.2);
+}
+
+double getHeartbeatVolumeSample() {
+	delay(SAMPLE_TIME_MS);
+
+	if(millis() > lastHeartbeatTimestamp + 1500) {
+		lastHeartbeatTimestamp = millis();
+		bigBeatSent = false;
+		smallBeatSent = false;
+	}
+
+	if(!bigBeatSent) {
+		bigBeatSent = true;
+		return 0.9;
+	} else if(!smallBeatSent && millis() > lastHeartbeatTimestamp + 500) {
+		smallBeatSent = true;
+		return 0.6;
+	}
+
+	return 0;
 }
