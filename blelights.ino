@@ -54,12 +54,12 @@ const unsigned char MAX_PATTERNS = 6;
 const unsigned int CYCLE_RATE = 15000;
 
 // start values
-unsigned char currentPattern = 4;
-//unsigned char currentMode = MODE_OFF;
+unsigned char currentPattern = 5;
+unsigned char currentMode = MODE_OFF;
 
 // test values
 //unsigned char currentPattern = 1;
-unsigned char currentMode = MODE_CYCLE;
+//unsigned char currentMode = MODE_CYCLE;
 
 unsigned long lastActivityTimestamp = millis();
 unsigned long lastHeartbeatTimestamp = millis();
